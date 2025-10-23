@@ -1,0 +1,66 @@
+<#
+.SYNOPSIS
+    This PowerShell script hardens remote management configuration.
+
+.DESCRIPTION
+    WN10-CC-000330	The Windows Remote Management (WinRM) client must not use Basic authentication.
+    WN10-CC-000335	The Windows Remote Management (WinRM) client must not allow unencrypted traffic.
+    WN10-CC-000345	The Windows Remote Management (WinRM) service must not use Basic authentication.
+    WN10-CC-000350	The Windows Remote Management (WinRM) service must not allow unencrypted traffic.
+    WN10-CC-000355	The Windows Remote Management (WinRM) service must not store RunAs credentials.
+    WN10-CC-000360	The Windows Remote Management (WinRM) client must not use Digest authentication.
+
+.NOTES
+    Author          : Jamal Copeland
+    LinkedIn        : linkedin.com/in/jamalcopeland/
+    GitHub          : github.com/jamalcopeland
+    Date Created    : 2025-10-23
+    Last Modified   : 2025-10-23
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000330, WN10-CC-000335, WN10-CC-000345, WN10-CC-000350,
+                      WN10-CC-000355, WN10-CC-000360
+
+.TESTED ON
+    Date(s) Tested  : 2025-10-23
+    Tested By       : Jamal Copeland
+    Systems Tested  : Windows 10
+
+.USAGE
+    PS C:\> .\RemoteManagement.ps1 
+#>
+
+#Define the registry paths
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service"
+$RegPathClient = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client"
+
+#Create the path if it doesn't exist
+If (!(Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+If (!(Test-Path $RegPathClient)) {
+    New-Item -Path $RegPathClient -Force | Out-Null
+}
+
+try {
+
+#Create or update the policy value for service
+Set-ItemProperty -Path $RegPath -Name "AllowBasic" -Value 0 -Type DWord
+Set-ItemProperty -Path $RegPath -Name "AllowUnencryptedTraffic" -Value 0 -Type DWord
+Set-ItemProperty -Path $RegPath -Name "DisableRunAs" -Value 1 -Type DWord
+
+#Create or update the policy value for client
+Set-ItemProperty -Path $RegPathClient -Name "AllowBasic" -Value 0 -Type DWord
+Set-ItemProperty -Path $RegPathClient -Name "AllowUnencryptedTraffic" -Value 0 -Type DWord
+Set-ItemProperty -Path $RegPathClient -Name "AllowDigest" -Value 0 -Type DWord
+
+#Print to terminal to verify output
+Write-Host "Remote Management STIGs implemented"
+
+}
+
+catch {
+    Write-Host "❌ Failed to apply WinRM STIGs. Run PowerShell as Administrator." -ForegroundColor Red
+}
