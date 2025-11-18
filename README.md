@@ -9,8 +9,6 @@ Welcome to my **Windows 10 STIG v3r2** remediation project! This repository docu
 
 ## STIG Automation Scripts
 
-This table briefly lists my top priority controls (based on severity, exploitability, and minimal user disruption). Each links to a more detailed page in the `docs/` folder.
-
 | STIG ID(s)                      | Summary                                                 | Link                                                         |
 |---------------------------------|---------------------------------------------------------|--------------------------------------------------------------|
 | WN10-CC-000005  | Camera access from the lock screen is disabled        | *[Disable Camera Access](./Scripts/Disable-Camera.ps1)*             |
